@@ -116,6 +116,8 @@ sudo docker ps --format "table {{.Names}}\t{{.Ports}}"
 # hermes-agent-hraf-hermes-agent-1   127.0.0.1:32768->4860/tcp
 ```
 
+![Hermes now bound to 127.0.0.1 only](screenshots/after-docker-ports.png)
+
 A full external TCP scan from the admin workstation showed port 32768 is gone:
 
 ```
@@ -127,6 +129,8 @@ PORT    STATE SERVICE
 443/tcp open  https
 Not shown: 65532 filtered tcp ports (no-response)
 ```
+
+![Full Nmap scan: only 22, 80 and 443 open](screenshots/nmap-full-scan.png)
 
 ---
 
@@ -154,7 +158,11 @@ sudo sshd -T | grep -E 'permitrootlogin|passwordauthentication'
 # passwordauthentication no
 ```
 
+![sshd effective config: root login and passwords disabled](screenshots/ssh-hardening-verified.png)
+
 Test: `ssh root@x.x.x.x` → `Permission denied (publickey)`. No password prompt is offered.
+
+![Root login denied from the admin workstation](screenshots/ssh-root-denied.png)
 
 ### Firewall (ufw)
 
@@ -168,6 +176,8 @@ sudo ufw enable
 ```
 
 Rules apply to IPv4 and IPv6. Ports 80/443 stay open for Traefik.
+
+![ufw status: default deny, only 22, 80, 443 allowed](screenshots/ufw-status.png)
 
 ### Fail2ban
 
@@ -228,6 +238,8 @@ sudo journalctl -u ssh --since "7 days ago" | grep -oP 'Invalid user \K\S+' | so
 | `sol` | 1 | Crypto validator nodes |
 | `nvidia` | 1 | GPU servers |
 | `erpnext` | 1 | ERP business software |
+
+![Usernames tried by SSH brute-force bots](screenshots/ssh-attack-usernames.png)
 
 **Firewall drops:** ufw logged SYN probes to random high ports (for example 7148, 13244, 25140, 30005, 35664) over both IPv4 and IPv6, a pattern consistent with internet-wide port scanning.
 
